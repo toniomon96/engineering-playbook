@@ -139,3 +139,40 @@ The real risk of agent-assisted work isn't bad code. It's skill atrophy you don'
 ## A useful agent kickoff template
 
 Not a ritual. A checklist you can skip when it's obvious.
+
+Project context: see [file].
+Task: [what, specifically]
+Out of scope: [what not to touch]
+Verification: [how I'll know it's right — tests, manual steps, a command]
+Mode: [propose-first | just-do-it | explain-as-you-go]
+Flags I want raised:
+
+Anything that changes [a specific thing you care about]
+Any dependency additions
+Anything that touches [sensitive area]
+
+The "Mode" line is the most underused. Telling an agent *how* to collaborate — propose before doing, or just execute, or teach you as it goes — is a small prompt change with a big effect on the output.
+
+---
+
+## Weekly self-check
+
+Five minutes, honest answers:
+
+1. Is there code I merged this week I couldn't reconstruct from memory?
+2. Did I verify or did I vibe?
+3. What's the most ambitious thing I attempted, and did I learn something from it?
+4. What felt like friction, and is there a one-time fix?
+5. What am I going to try next week that I haven't tried before?
+
+If #1 is "yes" more than once, slow down. If #3 is empty more than two weeks running, you've drifted into maintenance mode — force an exploration day.
+
+---
+
+## The posture
+
+You are not trying to automate yourself out of the loop. You are compressing the distance between idea and working system, while keeping your hands on the wheel in the places that matter. The goal isn't to type less. It's to ship work you're proud of, at a pace that would have been impossible five years ago, without losing the craft that makes the output good in the first place.
+
+Build deliberately. Verify ruthlessly. Explore without apology. Understand what you ship.
+
+Everything else is just tooling.
