@@ -7,6 +7,19 @@ Cross-project operating principles for my AI-assisted development work.
 - [HANDBOOK.md](HANDBOOK.md) — Agent-Assisted Engineering Handbook. General principles for directing coding agents.
 - [DESIGN_WORKFLOW.md](DESIGN_WORKFLOW.md) — Claude Design + Claude Code workflow for UI generation and upgrades.
 - [ARCHITECTURE_PROMPT.md](ARCHITECTURE_PROMPT.md) — The prompt that generates and maintains `ARCHITECTURE.md` files in project repos.
+- [REPO_REGISTRY_SCHEMA.md](REPO_REGISTRY_SCHEMA.md) — Manifest shape for repos in the consulting ecosystem.
+- [ARTIFACT_FRONTMATTER_SCHEMA.md](ARTIFACT_FRONTMATTER_SCHEMA.md) — Required metadata for consequential markdown artifacts.
+- [SANITIZATION_POLICY.md](SANITIZATION_POLICY.md) — Rules for moving client-confidential knowledge into reusable patterns.
+- [CODING_AGENT_CONTEXT_PACK.md](CODING_AGENT_CONTEXT_PACK.md) — Context-pack format for scoped coding-agent work.
+- [CONSOLE_BUILD_SPEC.md](CONSOLE_BUILD_SPEC.md) — Private operator console v0 build specification.
+- [90_DAY_EXECUTION_ROADMAP_v2.md](90_DAY_EXECUTION_ROADMAP_v2.md) — Business execution roadmap and phase gates.
+- [templates/](templates/) — Markdown templates for runbooks, decisions, requirements packets, and audit packets.
+- [decisions/](decisions/) — Accepted operating decisions for the playbook and consulting portfolio.
+- [log/weekly.md](log/weekly.md) — Weekly execution checklist rendered by Console v0.
+- [log/outreach.md](log/outreach.md) — Referral DM and intake tracking log rendered by Console v0.
+- [marketing/referrals.md](marketing/referrals.md) — Referral source list for future marketing surfaces.
+- [pipeline/](pipeline/) — Empty Phase 0 holder for future signed-engagement pipeline artifacts.
+- [engagements/](engagements/) — Empty Phase 0 holder for future engagement records.
 - [stubs/PLAYBOOK.md](stubs/PLAYBOOK.md) — Template stub to copy into each project repo at `docs/PLAYBOOK.md`.
 
 ## How this is used

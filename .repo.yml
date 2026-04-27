@@ -1,0 +1,37 @@
+repo_id: engineering-playbook
+display_name: "Engineering Playbook"
+repo_type: internal-platform
+owner: toni
+client_id: null
+engagement_id: null
+sensitivity_tier: 2
+domains:
+  - schemas
+  - templates
+  - agent-workflow
+  - sanitization
+allowed_context_consumers:
+  - hub-indexer
+  - cross-engagement-agents
+artifact_roots:
+  - templates/
+  - decisions/
+  - stubs/
+  - log/
+  - marketing/
+  - pipeline/
+  - engagements/
+source_of_truth_files:
+  - README.md
+  - CONSOLE_BUILD_SPEC.md
+  - 90_DAY_EXECUTION_ROADMAP_v2.md
+  - REPO_REGISTRY_SCHEMA.md
+  - ARTIFACT_FRONTMATTER_SCHEMA.md
+  - SANITIZATION_POLICY.md
+  - CODING_AGENT_CONTEXT_PACK.md
+  - log/weekly.md
+  - log/outreach.md
+  - marketing/referrals.md
+status: active
+created_at: 2026-04-27
+last_verified_at: 2026-04-27
