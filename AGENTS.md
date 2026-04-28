@@ -5,6 +5,7 @@ This repo owns portfolio operations, docs, and cross-repo checks. It should insp
 ## Operating Rules
 
 - Keep portfolio automation in this repo, not in Hub runtime code.
+- Use `PORTFOLIO_DELIVERY_PROTOCOL.md` before making cross-repo process, VCS, branch, or execution changes.
 - Do not stage, format, revert, or fix unrelated dirty work in sibling repos.
 - Treat `fitness-app` as read-only unless Toni explicitly says this session owns it.
 - Do not print secrets. Vercel and Supabase checks should report names, presence, and status only.

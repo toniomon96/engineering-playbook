@@ -12,6 +12,7 @@ Cross-project operating principles for my AI-assisted development work.
 - [SANITIZATION_POLICY.md](SANITIZATION_POLICY.md) — Rules for moving client-confidential knowledge into reusable patterns.
 - [CODING_AGENT_CONTEXT_PACK.md](CODING_AGENT_CONTEXT_PACK.md) — Context-pack format for scoped coding-agent work.
 - [CONSOLE_BUILD_SPEC.md](CONSOLE_BUILD_SPEC.md) — Private operator console v0 build specification.
+- [PORTFOLIO_DELIVERY_PROTOCOL.md](PORTFOLIO_DELIVERY_PROTOCOL.md) — Cross-repo VCS, agile execution, branch, verification, and closeout rules.
 - [90_DAY_EXECUTION_ROADMAP_v2.md](90_DAY_EXECUTION_ROADMAP_v2.md) — Business execution roadmap and phase gates.
 - [templates/](templates/) — Markdown templates for runbooks, decisions, requirements packets, and audit packets.
 - [decisions/](decisions/) — Accepted operating decisions for the playbook and consulting portfolio.
