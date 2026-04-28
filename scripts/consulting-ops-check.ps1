@@ -311,7 +311,23 @@ function Test-RepoStatus {
       $upstream = git rev-parse --abbrev-ref --symbolic-full-name "@{u}" 2>$null
       $expectedBranch = Get-ExpectedBranch $policy
       $mode = if ($isOwned) { "owned" } else { "read-only inventory" }
-      $branchDetail = if ($upstream) { "$branch tracking $upstream" } else { "$branch with no upstream" }
+      $aheadCount = 0
+      $behindCount = 0
+      if ($upstream) {
+        $counts = git rev-list --left-right --count "$upstream...HEAD" 2>$null
+        if ($counts) {
+          $parts = ($counts -split "\s+") | Where-Object { $_ -ne "" }
+          if ($parts.Count -ge 2) {
+            $behindCount = [int]$parts[0]
+            $aheadCount = [int]$parts[1]
+          }
+        }
+      }
+      $drift = @()
+      if ($aheadCount -gt 0) { $drift += "ahead $aheadCount" }
+      if ($behindCount -gt 0) { $drift += "behind $behindCount" }
+      $driftDetail = if ($drift.Count -gt 0) { "; $($drift -join ', ')" } else { "" }
+      $branchDetail = if ($upstream) { "$branch tracking $upstream$driftDetail" } else { "$branch with no upstream" }
       $laneDetail = "expected $expectedBranch; protected $($policy.ProtectedBranch); mode $mode"
 
       if ($branch -ne $expectedBranch) {
@@ -319,6 +335,10 @@ function Test-RepoStatus {
       }
       elseif ($statusOutput) {
         Add-Result "yellow" $area $repo "$branchDetail; dirty working tree; $laneDetail" "Preserve these edits; do not stage, format, or revert without explicit ownership."
+      }
+      elseif (($aheadCount -gt 0) -or ($behindCount -gt 0)) {
+        $nextAction = if ($behindCount -gt 0) { "Fast-forward from $upstream before starting scoped work." } else { "Push or open a PR for local commits before handoff." }
+        Add-Result "yellow" $area $repo "$branchDetail; clean; $laneDetail" $nextAction
       }
       else {
         Add-Result "green" $area $repo "$branchDetail; clean; $laneDetail" "None."
