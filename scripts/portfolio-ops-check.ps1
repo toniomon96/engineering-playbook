@@ -5,16 +5,16 @@ param(
   [switch]$StatusOnly
 )
 
-$argsList = @()
+$params = @{}
 if ($PortfolioRoot) {
-  $argsList += @("-PortfolioRoot", $PortfolioRoot)
+  $params["PortfolioRoot"] = $PortfolioRoot
 }
-foreach ($url in $HealthUrl) {
-  $argsList += @("-HealthUrl", $url)
+if ($HealthUrl) {
+  $params["HealthUrl"] = $HealthUrl
 }
 if ($StatusOnly) {
-  $argsList += "-StatusOnly"
+  $params["StatusOnly"] = $true
 }
 
-& (Join-Path $PSScriptRoot "consulting-ops-check.ps1") @argsList
+& (Join-Path $PSScriptRoot "consulting-ops-check.ps1") @params
 exit $LASTEXITCODE

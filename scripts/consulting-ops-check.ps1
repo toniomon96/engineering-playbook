@@ -401,6 +401,12 @@ function Test-SupabaseCli {
     Add-Result "yellow" "supabase" "migration list" "CLI check unavailable; output suppressed"
   }
 
+  $runLocalStatus = [Environment]::GetEnvironmentVariable("PORTFOLIO_RUN_SUPABASE_STATUS")
+  if ($runLocalStatus -ne "1") {
+    Add-Result "yellow" "supabase" "status" "skipped by default; set PORTFOLIO_RUN_SUPABASE_STATUS=1 for local Docker status"
+    return
+  }
+
   $status = Invoke-Captured $hubPath ($supabaseCommand + @("status"))
   if ($status.ExitCode -eq 0) {
     Add-Result "green" "supabase" "status" "CLI check passed; output suppressed"

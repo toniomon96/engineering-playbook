@@ -21,7 +21,7 @@ Cross-project operating principles for my AI-assisted development work.
 - [pipeline/](pipeline/) — Empty Phase 0 holder for future signed-engagement pipeline artifacts.
 - [engagements/](engagements/) — Empty Phase 0 holder for future engagement records.
 - [stubs/PLAYBOOK.md](stubs/PLAYBOOK.md) — Template stub to copy into each project repo at `docs/PLAYBOOK.md`.
-- [scripts/consulting-ops-check.ps1](scripts/consulting-ops-check.ps1) — Local portfolio status and validation check for the consulting operating stack.
+- [scripts/portfolio-ops-check.ps1](scripts/portfolio-ops-check.ps1) — Local portfolio status and validation wrapper for the consulting operating stack.
 
 ## How this is used
 
@@ -44,7 +44,7 @@ Run the portfolio ops wrapper from PowerShell:
 .\scripts\portfolio-ops-check.ps1
 ```
 
-The script reports red/yellow/green status without printing secrets or mutating sibling repos. It checks repo branch/status, `.repo.yml` coverage, `hub-registry` validation, configured health URLs, GitHub Actions when `gh` is available, Vercel production env names when `vercel` is available, and Supabase migration/status only through suppressed-output CLI checks. Configure health checks with `-HealthUrl`, `PORTFOLIO_HEALTH_URLS`, `HUB_HEALTH_URL`, or `CONSULTING_HEALTH_URL`. The older `consulting-ops-check.ps1` name remains as the implementation entrypoint for compatibility.
+The script reports red/yellow/green status without printing secrets or mutating sibling repos. It checks repo branch/status, `.repo.yml` coverage, `hub-registry` validation, configured health URLs, GitHub Actions when `gh` is available, Vercel env names when `vercel` is available, and Supabase migrations through suppressed-output CLI checks. Configure health checks with `-HealthUrl`, `PORTFOLIO_HEALTH_URLS`, `HUB_HEALTH_URL`, or `CONSULTING_HEALTH_URL`; if none are configured, the wrapper checks `https://onhand.dev/health`. Local Supabase status is skipped by default because it can require Docker; set `PORTFOLIO_RUN_SUPABASE_STATUS=1` when you intentionally want that check. The older `consulting-ops-check.ps1` name remains as the implementation entrypoint for compatibility.
 
 ## Scope
 
