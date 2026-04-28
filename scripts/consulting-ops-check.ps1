@@ -23,6 +23,10 @@ $repos = @(
   "dse-content"
 )
 
+$readOnlyRepos = @(
+  "fitness-app"
+)
+
 $requiredManifestFields = @(
   "repo_id",
   "display_name",
@@ -186,6 +190,30 @@ function Test-RepoStatus {
       else {
         Add-Result "green" "repo" $repo "$branchDetail; clean"
       }
+    }
+    finally {
+      Pop-Location
+    }
+  }
+
+  foreach ($repo in $readOnlyRepos) {
+    $path = Get-RepoPath $repo
+    if (-not (Test-Path -LiteralPath $path)) {
+      Add-Result "yellow" "repo-readonly" $repo "missing at $path"
+      continue
+    }
+
+    if (-not (Test-Path -LiteralPath (Join-Path $path ".git"))) {
+      Add-Result "yellow" "repo-readonly" $repo "not a git checkout"
+      continue
+    }
+
+    Push-Location $path
+    try {
+      $branch = git branch --show-current
+      $status = git status --short
+      $detail = if ($status) { "$branch; dirty working tree; read-only inventory only" } else { "$branch; clean; read-only inventory only" }
+      Add-Result "yellow" "repo-readonly" $repo $detail
     }
     finally {
       Pop-Location

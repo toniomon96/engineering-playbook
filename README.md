@@ -44,7 +44,7 @@ Run the portfolio ops wrapper from PowerShell:
 .\scripts\portfolio-ops-check.ps1
 ```
 
-The script reports red/yellow/green status without printing secrets or mutating sibling repos. It checks repo branch/status, `.repo.yml` coverage, `hub-registry` validation, configured health URLs, GitHub Actions when `gh` is available, Vercel env names when `vercel` is available, and Supabase migrations through suppressed-output CLI checks. Configure health checks with `-HealthUrl`, `PORTFOLIO_HEALTH_URLS`, `HUB_HEALTH_URL`, or `CONSULTING_HEALTH_URL`; if none are configured, the wrapper checks `https://onhand.dev/health`. Local Supabase status is skipped by default because it can require Docker; set `PORTFOLIO_RUN_SUPABASE_STATUS=1` when you intentionally want that check. The older `consulting-ops-check.ps1` name remains as the implementation entrypoint for compatibility.
+The script reports red/yellow/green status without printing secrets or mutating sibling repos. It checks repo branch/status, `.repo.yml` coverage, `hub-registry` validation, configured health URLs, GitHub Actions when `gh` is available, Vercel env names when `vercel` is available, and Supabase migrations through suppressed-output CLI checks. `fitness-app` is reported as read-only inventory only. Configure health checks with `-HealthUrl`, `PORTFOLIO_HEALTH_URLS`, `HUB_HEALTH_URL`, or `CONSULTING_HEALTH_URL`; if none are configured, the wrapper checks `https://onhand.dev/health`. Local Supabase status is skipped by default because it can require Docker; set `PORTFOLIO_RUN_SUPABASE_STATUS=1` when you intentionally want that check. The older `consulting-ops-check.ps1` name remains as the implementation entrypoint for compatibility.
 
 ## Scope
 
