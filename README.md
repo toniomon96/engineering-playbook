@@ -38,13 +38,13 @@ These are working documents. When something stops being true, fix it in the same
 
 ## Local ops check
 
-Run the consulting stack check from PowerShell:
+Run the portfolio ops wrapper from PowerShell:
 
 ```powershell
-.\scripts\consulting-ops-check.ps1
+.\scripts\portfolio-ops-check.ps1
 ```
 
-The script reports repo status and runs the safe local checks for `hub-registry`, `hub-prompts`, and `consulting`. It intentionally skips `fitness-app` because that repo may be owned by a separate local session.
+The script reports red/yellow/green status without printing secrets or mutating sibling repos. It checks repo branch/status, `.repo.yml` coverage, `hub-registry` validation, configured health URLs, GitHub Actions when `gh` is available, Vercel production env names when `vercel` is available, and Supabase migration/status only through suppressed-output CLI checks. Configure health checks with `-HealthUrl`, `PORTFOLIO_HEALTH_URLS`, `HUB_HEALTH_URL`, or `CONSULTING_HEALTH_URL`. The older `consulting-ops-check.ps1` name remains as the implementation entrypoint for compatibility.
 
 ## Scope
 

@@ -14,9 +14,12 @@
   - Update master spec audit reference if needed
   - Add a single "canonical pricing" reference line in the bundle index
 - [ ] **/start path A intake upgrade**
+  - Primary: route qualified diagnostic intake to Hub via `PUBLIC_CONSULTING_INTAKE_ENDPOINT`
+  - Fallback: keep Formspree live via `PUBLIC_FORMSPREE_ENDPOINT` if Hub intake is unavailable
+  - Last resort: render the email intake path only when Hub and Formspree are both unconfigured
   - Add fields: company, industry, current systems, budget band
   - Keep existing diagnostic fields (project, messy context, 30-day target)
-  - Verify Formspree route works end-to-end (submit a test, confirm email arrives)
+  - Verify Hub intake end-to-end first; then verify Formspree fallback and email fallback explicitly
 - [ ] Ship `ENGAGEMENT_START_CHECKLIST.md` to engineering-playbook
   - When to create a new client repo
   - What files to populate (`.repo.yml`, `docs/PLAYBOOK.md`, etc.)
