@@ -42,8 +42,7 @@ $requiredManifestFields = @(
 
 $vercelEnvSpecs = @{
   "consulting" = @(
-    @("PUBLIC_CONSULTING_INTAKE_ENDPOINT"),
-    @("PUBLIC_FORMSPREE_ENDPOINT")
+    @("PUBLIC_CONSULTING_INTAKE_ENDPOINT")
   )
   "hub" = @(
     @("HUB_UI_TOKEN"),
@@ -55,6 +54,12 @@ $vercelEnvSpecs = @{
     @("CONSULTING_INTAKE_SUCCESS_URL"),
     @("CONSOLE_SOURCE_ADAPTER"),
     @("CONSOLE_PLAYBOOK_REPO")
+  )
+}
+
+$optionalVercelEnvSpecs = @{
+  "consulting" = @(
+    @("PUBLIC_FORMSPREE_ENDPOINT")
   )
 }
 
@@ -87,6 +92,18 @@ function Test-Command {
   return $null -ne (Get-Command $Name -ErrorAction SilentlyContinue)
 }
 
+function Get-SupabaseCommand {
+  if (Test-Command "supabase") {
+    return @("supabase")
+  }
+
+  if (Test-Command "npx") {
+    return @("npx", "supabase")
+  }
+
+  return @()
+}
+
 function Invoke-Captured {
   param(
     [string]$WorkDir,
@@ -95,7 +112,8 @@ function Invoke-Captured {
 
   Push-Location $WorkDir
   try {
-    $output = & $Command[0] $Command[1..($Command.Length - 1)] 2>&1
+    $arguments = if ($Command.Length -gt 1) { @($Command[1..($Command.Length - 1)]) } else { @() }
+    $output = & $Command[0] @arguments 2>&1
     return [pscustomobject]@{
       ExitCode = $LASTEXITCODE
       Output = ($output -join "`n")
@@ -130,6 +148,10 @@ function Get-ConfiguredHealthUrls {
     if ($value) {
       $urls.Add($value) | Out-Null
     }
+  }
+
+  if ($urls.Count -eq 0) {
+    $urls.Add("https://onhand.dev/health") | Out-Null
   }
 
   return $urls | Select-Object -Unique
@@ -297,9 +319,9 @@ function Test-VercelEnvPresence {
       continue
     }
 
-    $result = Invoke-Captured $path @("vercel", "env", "ls", "production")
+    $result = Invoke-Captured $path @("vercel", "env", "ls")
     if ($result.ExitCode -ne 0) {
-      Add-Result "yellow" "vercel-env" $repo "unable to list production env names"
+      Add-Result "yellow" "vercel-env" $repo "unable to list env names"
       continue
     }
 
@@ -321,7 +343,30 @@ function Test-VercelEnvPresence {
       Add-Result "red" "vercel-env" $repo "missing env name(s): $($missing -join '; ')"
     }
     else {
-      Add-Result "green" "vercel-env" $repo "required production env names present"
+      Add-Result "green" "vercel-env" $repo "required env names present"
+    }
+
+    if ($optionalVercelEnvSpecs.ContainsKey($repo)) {
+      $optionalMissing = @()
+      foreach ($alternatives in $optionalVercelEnvSpecs[$repo]) {
+        $found = $false
+        foreach ($name in $alternatives) {
+          if ($result.Output -match "(?m)\b$([regex]::Escape($name))\b") {
+            $found = $true
+            break
+          }
+        }
+        if (-not $found) {
+          $optionalMissing += ($alternatives -join " or ")
+        }
+      }
+
+      if ($optionalMissing.Count -gt 0) {
+        Add-Result "yellow" "vercel-env" $repo "optional fallback env missing: $($optionalMissing -join '; ')"
+      }
+      else {
+        Add-Result "green" "vercel-env" $repo "optional fallback env names present"
+      }
     }
   }
 }
@@ -342,12 +387,13 @@ function Test-SupabaseCli {
     Add-Result "red" "supabase" "migrations" "no migration files found"
   }
 
-  if (-not (Test-Command "supabase")) {
+  $supabaseCommand = Get-SupabaseCommand
+  if ($supabaseCommand.Count -eq 0) {
     Add-Result "yellow" "supabase" "cli" "Supabase CLI unavailable"
     return
   }
 
-  $migrationList = Invoke-Captured $hubPath @("supabase", "migration", "list")
+  $migrationList = Invoke-Captured $hubPath ($supabaseCommand + @("migration", "list"))
   if ($migrationList.ExitCode -eq 0) {
     Add-Result "green" "supabase" "migration list" "CLI check passed; output suppressed"
   }
@@ -355,7 +401,7 @@ function Test-SupabaseCli {
     Add-Result "yellow" "supabase" "migration list" "CLI check unavailable; output suppressed"
   }
 
-  $status = Invoke-Captured $hubPath @("supabase", "status")
+  $status = Invoke-Captured $hubPath ($supabaseCommand + @("status"))
   if ($status.ExitCode -eq 0) {
     Add-Result "green" "supabase" "status" "CLI check passed; output suppressed"
   }
