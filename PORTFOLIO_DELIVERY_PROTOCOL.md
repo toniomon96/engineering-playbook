@@ -23,6 +23,7 @@ If repo guidance conflicts with this file, the repo guidance wins unless it is s
 - Do not push secrets, local env files, generated credentials, screenshots with private data, or client-identifying detail outside the repo's sensitivity tier.
 - For keys and env vars, store values in the password manager or provider dashboard. Repos track only names, classifications, storage locations, and rotation rules through `SECRET_MANAGEMENT.md` and `secrets/portfolio-secret-register.json`.
 - Use 1Password CLI for vault/item/field structure checks only. Plaintext reads require a scoped local secret-injection task; never print `op read` output in a transcript.
+- Use the 1Password bootstrapper to create missing vault/items/placeholder fields from the registry; placeholder values must be replaced manually inside 1Password or provider dashboards.
 - Portfolio status uses repo-aware branch lanes. Do not mark a repo yellow just because it is not on `main` if its protocol names another active branch.
 
 ## Branch Lanes

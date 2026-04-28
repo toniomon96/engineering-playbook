@@ -26,6 +26,7 @@ Cross-project operating principles for my AI-assisted development work.
 - [scripts/portfolio-ops-check.ps1](scripts/portfolio-ops-check.ps1) — Local portfolio status and validation wrapper for the consulting operating stack.
 - [scripts/secret-inventory-check.ps1](scripts/secret-inventory-check.ps1) — Value-free secret inventory checker for env-template coverage and untracked local env files.
 - [scripts/op-secret-check.ps1](scripts/op-secret-check.ps1) — 1Password CLI structure checker for the `Toni Portfolio Ops` vault.
+- [scripts/op-bootstrap-secret-items.ps1](scripts/op-bootstrap-secret-items.ps1) — Dry-run-first 1Password vault/item/field bootstrapper generated from the secret registry.
 - [secrets/portfolio-secret-register.json](secrets/portfolio-secret-register.json) — Secret names, classifications, storage locations, and rotation rules without values.
 
 ## How this is used
@@ -57,9 +58,10 @@ Run the secret inventory checker whenever an env template, Vercel env name, Supa
 ```powershell
 .\scripts\secret-inventory-check.ps1
 .\scripts\op-secret-check.ps1
+.\scripts\op-bootstrap-secret-items.ps1
 ```
 
-The inventory checker scans variable names only. It does not read or print values from real `.env*` files. The 1Password checker verifies vault/item structure through the `op` CLI and can check field labels with `-CheckFields`; it prints status only, never secret values.
+The inventory checker scans variable names only. It does not read or print values from real `.env*` files. The 1Password checker verifies vault/item structure through the `op` CLI and can check field labels with `-CheckFields`; it prints status only, never secret values. The bootstrapper runs dry by default; use `-Apply` only after 1Password desktop integration is enabled.
 
 ## Scope
 

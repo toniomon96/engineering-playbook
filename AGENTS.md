@@ -12,6 +12,7 @@ This repo owns portfolio operations, docs, and cross-repo checks. It should insp
 - Do not read real `.env`, `.env.local`, `.env.test`, provider export, keychain export, or locked-note files unless Toni explicitly asks for a credential migration session. Use `.env.example`, provider env-name lists, and `secrets/portfolio-secret-register.json` for normal work.
 - When env names, provider tokens, OAuth apps, webhook secrets, or deployment envs change, update `SECRET_MANAGEMENT.md` or `secrets/portfolio-secret-register.json` as needed and run `.\scripts\secret-inventory-check.ps1`.
 - Use `.\scripts\op-secret-check.ps1` to verify 1Password vault/item structure. Do not use `op read` or print field values in chat, logs, commits, or docs.
+- Use `.\scripts\op-bootstrap-secret-items.ps1` for dry-run structure planning. Only use `-Apply` when Toni has enabled 1Password desktop CLI integration for this session.
 - Prefer Hub intake as primary, Formspree as fallback, and email as the final fallback in consulting ops docs.
 
 ## Portfolio Check
@@ -19,6 +20,7 @@ This repo owns portfolio operations, docs, and cross-repo checks. It should insp
 - Use `.\scripts\portfolio-ops-check.ps1` for the red/yellow/green portfolio report.
 - Use `.\scripts\secret-inventory-check.ps1` for value-free key inventory checks.
 - Use `.\scripts\op-secret-check.ps1` after moving keys from locked notes into 1Password.
+- Use `.\scripts\op-bootstrap-secret-items.ps1` to create missing 1Password vault/items/placeholder fields from the registry.
 - The wrapper may call `gh`, `vercel`, `npx supabase`, `git`, `npm`, and health URLs.
 - A red report means a required check is failing. Yellow means advisory drift, dirty local work, read-only inventory, skipped checks, or manual gates.
 - A red report can be expected when live GitHub Actions are failing; do not treat that as permission to edit those repos unless the current task grants ownership.

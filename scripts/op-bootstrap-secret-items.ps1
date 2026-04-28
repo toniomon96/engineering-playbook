@@ -2,9 +2,9 @@
 param(
   [string]$VaultName = "Toni Portfolio Ops",
   [string]$RegistryPath = (Join-Path (Split-Path -Parent $PSScriptRoot) "secrets\portfolio-secret-register.json"),
-  [switch]$CheckFields,
   [switch]$IncludeInternalConfig,
-  [switch]$Strict
+  [switch]$Apply,
+  [switch]$AddMissingFields
 )
 
 $ErrorActionPreference = "Stop"
@@ -85,7 +85,7 @@ function Get-ItemEnvironment {
     return $Matches.env
   }
 
-  return $null
+  return "local"
 }
 
 function Get-EnvironmentAliases {
@@ -107,10 +107,6 @@ function Get-ExpectedFieldsForItem {
   )
 
   $environment = Get-ItemEnvironment $ItemName
-  if (-not $environment) {
-    return @()
-  }
-
   $aliases = Get-EnvironmentAliases $environment
   $fields = New-Object System.Collections.Generic.List[string]
   foreach ($variable in $Project.variables) {
@@ -161,80 +157,118 @@ function Get-FieldLabels {
   return $labels
 }
 
-Write-Host "1Password portfolio secret check"
+function New-FieldAssignments {
+  param([string[]]$FieldNames)
+
+  $assignments = New-Object System.Collections.Generic.List[string]
+  foreach ($fieldName in $FieldNames) {
+    $assignments.Add("$fieldName[text]=TODO: paste value manually") | Out-Null
+  }
+
+  return @($assignments)
+}
+
+Write-Host "1Password secret bootstrap"
 Write-Host "Vault: $VaultName"
 Write-Host "Registry: $RegistryPath"
-Write-Host "Mode: value-free report; secret values are never printed."
+Write-Host "Mode: $(if ($Apply) { 'apply' } else { 'dry-run' }); no secret values are read or printed."
 Write-Host ""
-
-$opPath = Find-OpExecutable
-if (-not $opPath) {
-  Add-Result "red" "op-cli" "install" "1Password CLI was not found" "Install with: winget install -e --id AgileBits.1Password.CLI"
-}
-else {
-  Add-Result "green" "op-cli" "install" "1Password CLI found" "Restart PowerShell if the op alias is not on PATH yet."
-}
 
 if (-not (Test-Path -LiteralPath $RegistryPath)) {
   Add-Result "red" "registry" "portfolio-secret-register.json" "registry file missing" "Restore secrets/portfolio-secret-register.json."
 }
-
-if ($opPath -and (Test-Path -LiteralPath $RegistryPath)) {
+else {
   $registry = Get-Content -LiteralPath $RegistryPath -Raw | ConvertFrom-Json
-  $vaultList = Invoke-OpJson $opPath @("vault", "list")
-  if ($vaultList.ExitCode -ne 0) {
-    Add-Result "yellow" "op-auth" "sign-in" "could not list 1Password vaults from this shell" "Open and unlock 1Password, enable Settings > Developer > Integrate with 1Password CLI, then run op vault list."
+  $includedClassifications = @("secret", "sensitive-config", "public-config")
+  if ($IncludeInternalConfig) {
+    $includedClassifications += "internal-config"
   }
-  else {
-    $vault = @($vaultList.Json | Where-Object { $_.name -eq $VaultName }) | Select-Object -First 1
-    if (-not $vault) {
-      Add-Result "yellow" "op-vault" $VaultName "vault missing or not visible to CLI" "Create the vault in 1Password or grant this account access."
+
+  $opPath = Find-OpExecutable
+  if (-not $opPath) {
+    Add-Result "red" "op-cli" "install" "1Password CLI was not found" "Install with: winget install -e --id AgileBits.1Password.CLI"
+  }
+  elseif (-not $Apply) {
+    Add-Result "green" "op-cli" "install" "1Password CLI found" "Run with -Apply after desktop integration is enabled."
+  }
+
+  if (-not $Apply) {
+    Add-Result "yellow" "plan" $VaultName "dry-run only; no 1Password changes made" "Run with -Apply to create the vault and missing items."
+    foreach ($project in $registry.projects) {
+      foreach ($itemName in @($project.vault_items | ForEach-Object { [string]$_ })) {
+        $fields = @(Get-ExpectedFieldsForItem $project $itemName $includedClassifications)
+        Add-Result "green" "plan-item" $itemName "would ensure item with $($fields.Count) field label(s)" "Create fields manually or run -Apply."
+      }
+    }
+  }
+  elseif ($opPath) {
+    $vaultList = Invoke-OpJson $opPath @("vault", "list")
+    if ($vaultList.ExitCode -ne 0) {
+      Add-Result "red" "op-auth" "sign-in" "could not list 1Password vaults from this shell" "Open and unlock 1Password, enable Settings > Developer > Integrate with 1Password CLI, then run op vault list."
     }
     else {
-      Add-Result "green" "op-vault" $VaultName "vault is visible to CLI" "None."
+      $vault = @($vaultList.Json | Where-Object { $_.name -eq $VaultName }) | Select-Object -First 1
+      if (-not $vault) {
+        & $opPath vault create $VaultName --description "Portfolio ops secrets. Values never stored in Git." --icon "vault-door" *> $null
+        if ($LASTEXITCODE -eq 0) {
+          Add-Result "green" "op-vault" $VaultName "created vault" "None."
+        }
+        else {
+          Add-Result "red" "op-vault" $VaultName "failed to create vault" "Create the vault manually in 1Password."
+        }
+      }
+      else {
+        Add-Result "green" "op-vault" $VaultName "vault already exists" "None."
+      }
 
       $itemList = Invoke-OpJson $opPath @("item", "list", "--vault", $VaultName)
       if ($itemList.ExitCode -ne 0) {
-        Add-Result "yellow" "op-items" $VaultName "could not list items" "Confirm 1Password CLI access to the vault."
+        Add-Result "red" "op-items" $VaultName "could not list items after vault check" "Confirm 1Password CLI access to the vault."
       }
       else {
         $itemNames = @($itemList.Json | ForEach-Object { [string]$_.title })
-        $includedClassifications = @("secret", "sensitive-config", "public-config")
-        if ($IncludeInternalConfig) {
-          $includedClassifications += "internal-config"
-        }
-
         foreach ($project in $registry.projects) {
           foreach ($itemName in @($project.vault_items | ForEach-Object { [string]$_ })) {
+            $fields = @(Get-ExpectedFieldsForItem $project $itemName $includedClassifications)
+            $tags = "portfolio-secrets,$($project.repo),$(Get-ItemEnvironment $itemName)"
+
             if ($itemName -notin $itemNames) {
-              $status = if ($Strict -and $itemName -match "/ production$") { "red" } else { "yellow" }
-              Add-Result $status "op-item" $itemName "item missing" "Create this item in the $VaultName vault."
+              $assignments = @(New-FieldAssignments $fields)
+              & $opPath item create --category "secure-note" --title $itemName --vault $VaultName --tags $tags @assignments *> $null
+              if ($LASTEXITCODE -eq 0) {
+                Add-Result "green" "op-item" $itemName "created item with $($fields.Count) placeholder field label(s)" "Replace placeholder values manually in 1Password."
+              }
+              else {
+                Add-Result "red" "op-item" $itemName "failed to create item" "Create this item manually in the $VaultName vault."
+              }
               continue
             }
 
-            Add-Result "green" "op-item" $itemName "item exists" "None."
+            if (-not $AddMissingFields) {
+              Add-Result "yellow" "op-item" $itemName "item already exists; missing-field edits skipped" "Run with -AddMissingFields to add placeholder fields to existing items."
+              continue
+            }
 
-            if ($CheckFields) {
-              $expectedFields = @(Get-ExpectedFieldsForItem $project $itemName $includedClassifications)
-              if ($expectedFields.Count -eq 0) {
-                continue
-              }
+            $item = Invoke-OpJson $opPath @("item", "get", $itemName, "--vault", $VaultName)
+            if ($item.ExitCode -ne 0) {
+              Add-Result "yellow" "op-fields" $itemName "could not inspect existing field labels" "Open the item manually and compare against the registry."
+              continue
+            }
 
-              $item = Invoke-OpJson $opPath @("item", "get", $itemName, "--vault", $VaultName)
-              if ($item.ExitCode -ne 0) {
-                Add-Result "yellow" "op-fields" $itemName "could not inspect field labels" "Open the item manually and compare against the registry."
-                continue
-              }
+            $labels = @(Get-FieldLabels $item.Json | Sort-Object -Unique)
+            $missingFields = @($fields | Where-Object { $_ -notin $labels })
+            if ($missingFields.Count -eq 0) {
+              Add-Result "green" "op-fields" $itemName "all expected field labels already present" "None."
+              continue
+            }
 
-              $labels = @(Get-FieldLabels $item.Json | Sort-Object -Unique)
-              $missingFields = @($expectedFields | Where-Object { $_ -notin $labels })
-              if ($missingFields.Count -gt 0) {
-                $status = if ($Strict -and $itemName -match "/ production$") { "red" } else { "yellow" }
-                Add-Result $status "op-fields" $itemName "missing field label(s): $($missingFields -join ', ')" "Add fields named exactly like the env vars. Do not paste values into the repo."
-              }
-              else {
-                Add-Result "green" "op-fields" $itemName "$($expectedFields.Count) expected field label(s) present" "None."
-              }
+            $assignments = @(New-FieldAssignments $missingFields)
+            & $opPath item edit $itemName --vault $VaultName @assignments *> $null
+            if ($LASTEXITCODE -eq 0) {
+              Add-Result "green" "op-fields" $itemName "added $($missingFields.Count) placeholder field label(s)" "Replace placeholder values manually in 1Password."
+            }
+            else {
+              Add-Result "red" "op-fields" $itemName "failed to add missing field label(s)" "Add these fields manually: $($missingFields -join ', ')"
             }
           }
         }

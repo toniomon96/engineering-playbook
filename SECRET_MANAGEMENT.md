@@ -100,6 +100,16 @@ The playbook checker is:
 
 Default mode checks that the CLI, vault, and expected items exist. `-CheckFields` verifies field labels against the registry. It still prints only names and status, not values. Do not run `op read` in a shared transcript unless Toni explicitly asks for a local secret injection task.
 
+The bootstrapper creates the empty vault/item/field structure from the registry:
+
+```powershell
+.\scripts\op-bootstrap-secret-items.ps1
+.\scripts\op-bootstrap-secret-items.ps1 -Apply
+.\scripts\op-bootstrap-secret-items.ps1 -Apply -AddMissingFields
+```
+
+Default mode is dry-run and does not require sign-in. `-Apply` creates the `Toni Portfolio Ops` vault if it is missing and creates missing project/environment items. New fields are created with `TODO: paste value manually`, never real values. Existing items are not edited unless `-AddMissingFields` is passed.
+
 ## Migration From Locked Notes
 
 Do this in small batches:
