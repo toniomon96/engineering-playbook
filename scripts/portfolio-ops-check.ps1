@@ -2,6 +2,7 @@
 param(
   [string]$PortfolioRoot,
   [string[]]$HealthUrl,
+  [string[]]$OwnedRepo,
   [switch]$StatusOnly
 )
 
@@ -11,6 +12,9 @@ if ($PortfolioRoot) {
 }
 if ($HealthUrl) {
   $params["HealthUrl"] = $HealthUrl
+}
+if ($OwnedRepo) {
+  $params["OwnedRepo"] = $OwnedRepo
 }
 if ($StatusOnly) {
   $params["StatusOnly"] = $true

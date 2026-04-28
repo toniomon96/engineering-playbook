@@ -21,6 +21,7 @@ If repo guidance conflicts with this file, the repo guidance wins unless it is s
 - Use Conventional Commits in imperative mood.
 - Never use destructive Git commands unless Toni explicitly asks for that operation.
 - Do not push secrets, local env files, generated credentials, screenshots with private data, or client-identifying detail outside the repo's sensitivity tier.
+- Portfolio status uses repo-aware branch lanes. Do not mark a repo yellow just because it is not on `main` if its protocol names another active branch.
 
 ## Branch Lanes
 
@@ -64,6 +65,14 @@ Work is done when:
 - docs, checklists, roadmaps, or decision notes are updated when the work changes process or direction
 - commits are separated per repo and pushed when the repo already has a remote
 - the final handoff states branch, commit, verification, and remaining manual gates
+
+## Portfolio Wrapper Semantics
+
+- GREEN means the configured check passed or the repo is clean on its expected branch.
+- YELLOW means advisory drift, skipped status-only validation, dirty local work, read-only inventory, optional workflow failure, or manual dashboard work.
+- RED means a required check failed, a required checkout is missing, required manifest coverage is missing, or a live health/env requirement is broken.
+- `fitness-app` is read-only by default. Use `.\scripts\portfolio-ops-check.ps1 -OwnedRepo fitness-app` only when the current session explicitly owns Omnexus work.
+- The wrapper reports next actions for every finding. Fix the underlying issue rather than editing the wrapper to make a report green.
 
 ## Repo-Specific Anchors
 
