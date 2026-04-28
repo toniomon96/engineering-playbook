@@ -21,6 +21,7 @@ If repo guidance conflicts with this file, the repo guidance wins unless it is s
 - Use Conventional Commits in imperative mood.
 - Never use destructive Git commands unless Toni explicitly asks for that operation.
 - Do not push secrets, local env files, generated credentials, screenshots with private data, or client-identifying detail outside the repo's sensitivity tier.
+- For keys and env vars, store values in the password manager or provider dashboard. Repos track only names, classifications, storage locations, and rotation rules through `SECRET_MANAGEMENT.md` and `secrets/portfolio-secret-register.json`.
 - Portfolio status uses repo-aware branch lanes. Do not mark a repo yellow just because it is not on `main` if its protocol names another active branch.
 
 ## Branch Lanes
@@ -63,6 +64,7 @@ Work is done when:
 - the intended files are changed and unrelated dirty work is untouched
 - repo-specific verification passes or the skipped verification is named honestly
 - docs, checklists, roadmaps, or decision notes are updated when the work changes process or direction
+- `.\scripts\secret-inventory-check.ps1` passes when the work changes env templates, deployment env names, OAuth apps, webhook secrets, API tokens, or key rotation policy
 - commits are separated per repo and pushed when the repo already has a remote
 - the final handoff states branch, commit, verification, and remaining manual gates
 

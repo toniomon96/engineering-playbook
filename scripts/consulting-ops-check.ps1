@@ -377,6 +377,81 @@ function Test-ManifestCoverage {
   }
 }
 
+function Get-SecretRegistryPropertyNames {
+  param([object]$Node)
+
+  $names = New-Object System.Collections.Generic.List[string]
+  if ($null -eq $Node) {
+    return $names
+  }
+
+  if ($Node -is [System.Collections.IEnumerable] -and $Node -isnot [string]) {
+    foreach ($item in $Node) {
+      foreach ($name in Get-SecretRegistryPropertyNames $item) {
+        $names.Add($name) | Out-Null
+      }
+    }
+    return $names
+  }
+
+  if ($Node.PSObject.Properties) {
+    foreach ($property in $Node.PSObject.Properties) {
+      $names.Add($property.Name) | Out-Null
+      foreach ($childName in Get-SecretRegistryPropertyNames $property.Value) {
+        $names.Add($childName) | Out-Null
+      }
+    }
+  }
+
+  return $names
+}
+
+function Test-SecretInventory {
+  $registryPath = Join-Path $playbookRoot "secrets\portfolio-secret-register.json"
+  $checkerPath = Join-Path $PSScriptRoot "secret-inventory-check.ps1"
+  if (-not (Test-Path -LiteralPath $registryPath)) {
+    Add-Result "red" "secrets" "registry" "missing secrets/portfolio-secret-register.json" "Create the value-free registry before adding or rotating portfolio keys."
+    return
+  }
+
+  if (-not (Test-Path -LiteralPath $checkerPath)) {
+    Add-Result "red" "secrets" "inventory checker" "missing scripts/secret-inventory-check.ps1" "Restore the value-free secret inventory checker."
+    return
+  }
+
+  try {
+    $registry = Get-Content -LiteralPath $registryPath -Raw | ConvertFrom-Json
+  }
+  catch {
+    Add-Result "red" "secrets" "registry" "registry JSON could not be parsed" "Fix the JSON before relying on key inventory."
+    return
+  }
+
+  $forbiddenProperties = @("value", "secret_value", "actual_value", "plaintext", "password_value")
+  $foundForbidden = @(Get-SecretRegistryPropertyNames $registry | Where-Object { $_ -in $forbiddenProperties } | Select-Object -Unique)
+  if ($foundForbidden.Count -gt 0) {
+    Add-Result "red" "secrets" "value-free registry" "forbidden value-like fields present: $($foundForbidden -join ', ')" "Remove value-bearing fields from the registry and rotate if any value was committed."
+    return
+  }
+
+  $expectedSecretRepos = @(
+    "consulting",
+    "hub",
+    "demario-pickleball-1",
+    "fitness-app",
+    "dse-content",
+    "diagnose-to-plan"
+  )
+  $registeredRepos = @($registry.projects | ForEach-Object { [string]$_.repo })
+  $missingRepos = @($expectedSecretRepos | Where-Object { $_ -notin $registeredRepos })
+  if ($missingRepos.Count -gt 0) {
+    Add-Result "red" "secrets" "repo coverage" "missing repo(s): $($missingRepos -join ', ')" "Add value-free secret registry coverage for each repo."
+    return
+  }
+
+  Add-Result "green" "secrets" "inventory" "value-free registry and checker present; repo coverage present" "Run scripts/secret-inventory-check.ps1 after env template changes."
+}
+
 function Test-HubRegistry {
   if ($StatusOnly) {
     Add-Result "yellow" "hub-registry" "validation" "skipped by -StatusOnly" "Run without -StatusOnly before release or handoff."
@@ -641,6 +716,7 @@ function Write-Results {
 
 Test-RepoStatus
 Test-ManifestCoverage
+Test-SecretInventory
 Test-HubRegistry
 Test-HealthUrls
 Test-GitHubActions

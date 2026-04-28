@@ -10,6 +10,7 @@ Cross-project operating principles for my AI-assisted development work.
 - [REPO_REGISTRY_SCHEMA.md](REPO_REGISTRY_SCHEMA.md) — Manifest shape for repos in the consulting ecosystem.
 - [ARTIFACT_FRONTMATTER_SCHEMA.md](ARTIFACT_FRONTMATTER_SCHEMA.md) — Required metadata for consequential markdown artifacts.
 - [SANITIZATION_POLICY.md](SANITIZATION_POLICY.md) — Rules for moving client-confidential knowledge into reusable patterns.
+- [SECRET_MANAGEMENT.md](SECRET_MANAGEMENT.md) — Portfolio key strategy, vault structure, rotation cadence, and agent rules.
 - [CODING_AGENT_CONTEXT_PACK.md](CODING_AGENT_CONTEXT_PACK.md) — Context-pack format for scoped coding-agent work.
 - [CONSOLE_BUILD_SPEC.md](CONSOLE_BUILD_SPEC.md) — Private operator console v0 build specification.
 - [PORTFOLIO_DELIVERY_PROTOCOL.md](PORTFOLIO_DELIVERY_PROTOCOL.md) — Cross-repo VCS, agile execution, branch, verification, and closeout rules.
@@ -23,6 +24,8 @@ Cross-project operating principles for my AI-assisted development work.
 - [engagements/](engagements/) — Empty Phase 0 holder for future engagement records.
 - [stubs/PLAYBOOK.md](stubs/PLAYBOOK.md) — Template stub to copy into each project repo at `docs/PLAYBOOK.md`.
 - [scripts/portfolio-ops-check.ps1](scripts/portfolio-ops-check.ps1) — Local portfolio status and validation wrapper for the consulting operating stack.
+- [scripts/secret-inventory-check.ps1](scripts/secret-inventory-check.ps1) — Value-free secret inventory checker for env-template coverage and untracked local env files.
+- [secrets/portfolio-secret-register.json](secrets/portfolio-secret-register.json) — Secret names, classifications, storage locations, and rotation rules without values.
 
 ## How this is used
 
@@ -47,6 +50,14 @@ Run the portfolio ops wrapper from PowerShell:
 ```
 
 The script reports red/yellow/green status without printing secrets or mutating sibling repos. It checks repo-aware branch lanes, `.repo.yml` coverage across every configured repo, `hub-registry` validation, configured health URLs, required GitHub Actions when `gh` is available, Vercel env names when `vercel` is available, and Supabase migrations through suppressed-output CLI checks. `fitness-app` is read-only by default; pass `-OwnedRepo fitness-app` only when the current session explicitly owns Omnexus work. Configure health checks with `-HealthUrl`, `PORTFOLIO_HEALTH_URLS`, `HUB_HEALTH_URL`, or `CONSULTING_HEALTH_URL`; if none are configured, the wrapper checks `https://onhand.dev/health`. Local Supabase status is skipped by default because it can require Docker; set `PORTFOLIO_RUN_SUPABASE_STATUS=1` when you intentionally want that check. The older `consulting-ops-check.ps1` name remains as the implementation entrypoint for compatibility.
+
+Run the secret inventory checker whenever an env template, Vercel env name, Supabase key, OAuth app, webhook secret, or provider token changes:
+
+```powershell
+.\scripts\secret-inventory-check.ps1
+```
+
+The checker scans variable names only. It does not read or print values from real `.env*` files.
 
 ## Scope
 
