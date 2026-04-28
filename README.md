@@ -21,6 +21,7 @@ Cross-project operating principles for my AI-assisted development work.
 - [pipeline/](pipeline/) — Empty Phase 0 holder for future signed-engagement pipeline artifacts.
 - [engagements/](engagements/) — Empty Phase 0 holder for future engagement records.
 - [stubs/PLAYBOOK.md](stubs/PLAYBOOK.md) — Template stub to copy into each project repo at `docs/PLAYBOOK.md`.
+- [scripts/consulting-ops-check.ps1](scripts/consulting-ops-check.ps1) — Local portfolio status and validation check for the consulting operating stack.
 
 ## How this is used
 
@@ -34,6 +35,16 @@ Because this repo is private, raw URLs require authentication. Claude Code (via 
 ## Living docs
 
 These are working documents. When something stops being true, fix it in the same commit where it was noticed. Review cadence: monthly for the first quarter, quarterly after.
+
+## Local ops check
+
+Run the consulting stack check from PowerShell:
+
+```powershell
+.\scripts\consulting-ops-check.ps1
+```
+
+The script reports repo status and runs the safe local checks for `hub-registry`, `hub-prompts`, and `consulting`. It intentionally skips `fitness-app` because that repo may be owned by a separate local session.
 
 ## Scope
 
