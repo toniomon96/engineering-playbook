@@ -2,6 +2,8 @@
 
 *Supersedes the original 90-day roadmap. The earlier version shipped infrastructure ahead of revenue. This version ships only what the first audit needs, then earns each next infrastructure step from real engagement evidence.*
 
+> Status, 2026-04-29: Historical business-execution roadmap. Keep this for context on the original revenue-first gates, but use `diagnose-to-plan/docs/PRACTICE_PRODUCTION_ROADMAP.md` as the current source of truth for practice production sequencing, hosted DTP, Client Operating Kits, proof promotion, and `tm-skills`.
+
 # Week by week: narrowest viable Phase 0
 
 The single biggest risk to this practice is over-operationalizing before the first audit. Every infrastructure decision in this roadmap is gated behind a real engagement event — a signed SOW, a completed engagement, a sustained second client.

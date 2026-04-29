@@ -2,6 +2,10 @@
 
 Cross-project operating principles for my AI-assisted development work.
 
+Current practice-production roadmap: `diagnose-to-plan/docs/PRACTICE_PRODUCTION_ROADMAP.md`.
+
+This repo remains the portfolio playbook for schemas, templates, historical decisions, secret-management references, and general operating doctrine. It is no longer the source of truth for current consulting-practice production sequencing, hosted DTP, Client Operating Kits, public proof promotion, or the `tm-skills` build plan.
+
 ## Contents
 
 - [HANDBOOK.md](HANDBOOK.md) — Agent-Assisted Engineering Handbook. General principles for directing coding agents.
@@ -65,6 +69,6 @@ The inventory checker scans variable names only. It does not read or print value
 
 ## Scope
 
-This repo is for principles that apply across projects. Project-specific docs live in project repos. Prompts live in `hub-prompts`. Runtime target config lives in `hub-registry`.
+This repo is for principles that apply across projects. Project-specific docs live in project repos. Prompts live in `hub-prompts`. Runtime target config lives in `hub-registry`. Current practice-production sequencing lives in DTP.
 
 Every doc here must be referenced by at least one active project's `docs/PLAYBOOK.md`. If no project references it, it's notes, and notes belong in Obsidian.
