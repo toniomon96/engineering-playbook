@@ -85,7 +85,9 @@ $repoPolicies = @(
     ProtectedBranch = "main"
     Ownership = "owned"
     ValidateManifest = $true
-    Actions = @()
+    Actions = @(
+      (New-ActionCheck "CI" "main" $true)
+    )
   },
   [pscustomobject]@{
     Name = "demario-pickleball-1"

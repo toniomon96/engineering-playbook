@@ -21,6 +21,7 @@ This repo remains the portfolio playbook for schemas, templates, historical deci
 - [90_DAY_EXECUTION_ROADMAP_v2.md](90_DAY_EXECUTION_ROADMAP_v2.md) — Business execution roadmap and phase gates.
 - [templates/](templates/) — Markdown templates for runbooks, decisions, requirements packets, and audit packets.
 - [decisions/](decisions/) — Accepted operating decisions for the playbook and consulting portfolio.
+- [decisions/2026-04-29-practice-roadmap-source-of-truth.md](decisions/2026-04-29-practice-roadmap-source-of-truth.md) — Records DTP as the current practice-production roadmap source of truth.
 - [log/weekly.md](log/weekly.md) — Weekly execution checklist rendered by Console v0.
 - [log/outreach.md](log/outreach.md) — Referral DM and intake tracking log rendered by Console v0.
 - [marketing/referrals.md](marketing/referrals.md) — Referral source list for future marketing surfaces.
