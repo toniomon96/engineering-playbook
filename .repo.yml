@@ -2,6 +2,9 @@ repo_id: engineering-playbook
 display_name: "Engineering Playbook"
 repo_type: internal-platform
 owner: toni
+github_owner: Toni-Montez-Consulting
+github_repo: engineering-playbook
+github_url: https://github.com/Toni-Montez-Consulting/engineering-playbook
 client_id: null
 engagement_id: null
 sensitivity_tier: 2

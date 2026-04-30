@@ -39,7 +39,7 @@ This repo remains the portfolio playbook for schemas, templates, historical deci
 Each of my project repos includes `docs/PLAYBOOK.md` pointing back to the relevant doc here via raw URL. That way a fresh Claude or Copilot session in any repo sees the canonical guidance without re-explaining.
 
 Canonical raw URL base:
-`https://raw.githubusercontent.com/toniomon96/engineering-playbook/main/<filename>`
+`https://raw.githubusercontent.com/Toni-Montez-Consulting/engineering-playbook/main/<filename>`
 
 Because this repo is private, raw URLs require authentication. Claude Code (via GitHub MCP) and the Hub (via HUB_GITHUB_TOKEN) have this by default.
 
